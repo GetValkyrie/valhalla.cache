@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  remote_user: root
+  vars:
+    - varnish_default_backend_port: "80"
+    - varnish_listen_port: "8080"
+    - graphite_host: localhost
+  roles:
+    - valhalla.cache
+    - valhalla.monitoring

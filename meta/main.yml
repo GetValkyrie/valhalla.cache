@@ -1,0 +1,51 @@
+---
+galaxy_info:
+  author: Christopher Gervais (ergonlogic)
+  description: Installs and configures Varnish and service monitoring.
+  company: GetValkyrie 
+  license: GPLv3
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - cloud:ec2
+  - web
+dependencies:
+  - role: valhalla.common
+    valhalla_use_common_collectd_conf: no
+  - role: Stouts.collectd
+    collectd_version: 5.5.0 # req'd for Varnish 4
+    collectd_write_graphite: yes
+    collectd_plugins:
+      - varnish
+    collectd_plugins_options:
+      varnish:
+        - '<Instance "">'
+        - '  CollectCache       true'
+        - '  CollectConnections true'
+        - '  CollectBackend     true'
+        - '  CollectSHM         true'
+        - '  CollectESI         false'
+        - '  CollectFetch       false'
+        - '  CollectHCB         false'
+        - '  CollectSMA         false'
+        - '  CollectSMS         false'
+        - '  CollectSM          false'
+        - '  CollectTotals      false'
+        - '  CollectWorkers     false'
+        - '</Instance>'
+    collectd_write_graphite_options:
+      Host: "{{ graphite_host }}"
+      Port: 2003
+      Prefix: stats.
+      Protocol: tcp
+      AlwaysAppendDS: 'false'
+      EscapeCharacter: _
+      LogSendErrors: 'true'
+      StoreRates: 'true'
+  - role: geerlingguy.varnish
+    varnish_admin_listen_host: 0.0.0.0
+    varnish_storage: 'malloc,4G'
+ 
